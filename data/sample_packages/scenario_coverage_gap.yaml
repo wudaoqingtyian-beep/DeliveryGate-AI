@@ -1,0 +1,36 @@
+delivery_id: "DLV-2024-005"
+project_name: "订单中心"
+version: "1.2.0"
+contact: "张三 <zhangsan@example.com>"
+
+target_environment:
+  runtime: "python"
+  python_version: "3.12"
+  os: "Ubuntu 22.04"
+  required_env_vars:
+    - name: "DB_URL"
+      description: "数据库连接串"
+      required: true
+
+actual_deployment:
+  environment_name: "staging-01"
+  runtime: "python"
+  python_version: "3.12"
+  os: "Ubuntu 22.04"
+  env_vars_present:
+    - "DB_URL"
+
+api_contracts:
+  - endpoint_id: "create_order"
+    path: "/api/v1/orders"
+    method: "POST"
+    auth: "bearer_token"
+    api_version: "v1"
+
+acceptance_criteria:
+  - criterion_id: "AC-1"
+    description: "下单成功返回 201 且订单号非空"
+    related_api: "create_order"
+    severity: "critical"
+
+verification_steps: []   # 关键验收要求 AC-1 缺少对应验证步骤（blocker）

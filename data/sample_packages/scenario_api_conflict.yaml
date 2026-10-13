@@ -1,0 +1,39 @@
+delivery_id: "DLV-2024-004"
+project_name: "订单中心"
+version: "1.2.0"
+contact: "张三 <zhangsan@example.com>"
+
+target_environment:
+  runtime: "python"
+  python_version: "3.12"
+  os: "Ubuntu 22.04"
+  required_env_vars:
+    - name: "DB_URL"
+      description: "数据库连接串"
+      required: true
+
+actual_deployment:
+  environment_name: "staging-01"
+  runtime: "python"
+  python_version: "3.12"
+  os: "Ubuntu 22.04"
+  env_vars_present:
+    - "DB_URL"
+
+api_contracts:
+  - endpoint_id: "create_order"
+    path: "/api/v1/orders"
+    method: "POST"
+    auth: "bearer_token"
+    api_version: "v1"
+
+acceptance_criteria:
+  - criterion_id: "AC-1"
+    description: "下单成功返回 201 且订单号非空"
+    related_api: "submit_order"   # 契约中不存在该 endpoint_id（blocker）
+    severity: "critical"
+
+verification_steps:
+  - step_id: "VS-1"
+    criterion_id: "AC-1"
+    action: "校验下单接口返回 201 且订单号非空"

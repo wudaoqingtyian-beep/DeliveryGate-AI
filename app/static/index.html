@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeliveryGate AI — 企业软件交付前置核验</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <noscript>
+    <p class="noscript-tip">本工作台需要启用 JavaScript 才能使用。</p>
+  </noscript>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="header-text">
+        <p class="product-name">DeliveryGate AI</p>
+        <h1>企业软件交付前置核验</h1>
+        <p class="header-desc">在部署或联调前，检查交付资料完整性、环境配置、接口契约和验收覆盖情况。</p>
+      </div>
+      <div class="header-status">
+        <span class="status-label">服务状态</span>
+        <span id="health-status" class="badge badge-unknown">检测中…</span>
+        <p id="health-hint" class="health-hint" aria-live="polite"></p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- 核验配置 -->
+    <section class="card" aria-labelledby="config-title">
+      <h2 id="config-title">发起核验</h2>
+      <form id="run-form" novalidate>
+        <div class="form-row">
+          <div class="form-field">
+            <label for="scenario-select">核验场景</label>
+            <select id="scenario-select" name="scenario">
+              <option value="">加载中…</option>
+            </select>
+          </div>
+          <fieldset class="form-field mode-fieldset">
+            <legend>运行模式</legend>
+            <label class="radio-label">
+              <input type="radio" name="mode" value="simulation" checked>
+              <span>模拟模式（simulation）</span>
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="mode" value="real">
+              <span>真实模型模式（real）</span>
+            </label>
+          </fieldset>
+        </div>
+        <p id="real-mode-warning" class="warning-box" hidden>
+          真实模型模式将向服务端已配置的外部模型服务发送请求，可能产生费用；
+          调用失败时返回明确错误，<strong>不会</strong>自动切换回模拟模式。
+          API Key 由服务端环境变量配置，请勿在浏览器中输入任何密钥。
+        </p>
+        <div class="form-actions">
+          <button id="run-button" type="submit" class="btn btn-primary">开始核验</button>
+          <p id="run-status" class="inline-status" aria-live="polite"></p>
+        </div>
+      </form>
+    </section>
+
+    <!-- 运行错误提示（发起核验失败时显示，不混入 findings） -->
+    <section id="run-error" class="card error-card" hidden aria-labelledby="run-error-title">
+      <h2 id="run-error-title">核验请求失败</h2>
+      <p id="run-error-message" class="error-message"></p>
+    </section>
+
+    <!-- 核验结果（发起核验 / 详情查询 / 报告查询共用） -->
+    <section id="result-section" class="card" hidden aria-labelledby="result-title">
+      <div class="result-heading">
+        <h2 id="result-title">核验结果</h2>
+        <span id="result-source" class="badge badge-unknown"></span>
+      </div>
+
+      <div class="meta-grid" id="meta-grid"></div>
+
+      <div id="partial-warning" class="warning-box" hidden></div>
+
+      <h3>核验问题（Findings）</h3>
+      <p id="findings-summary" class="summary-line"></p>
+      <div id="findings-container"></div>
+
+      <h3>工具执行记录</h3>
+      <div id="tools-container"></div>
+    </section>
+
+    <!-- 任务查询 -->
+    <section class="card" aria-labelledby="query-title">
+      <h2 id="query-title">查询历史任务</h2>
+      <p class="section-hint">输入已存在的任务 ID（run_id），读取服务端持久化的任务详情或核验报告；不会重新执行核验。</p>
+      <form id="query-form" novalidate>
+        <div class="form-row query-row">
+          <div class="form-field">
+            <label for="run-id-input">任务 ID（run_id）</label>
+            <input id="run-id-input" name="run_id" type="text" inputmode="numeric"
+                   placeholder="例如：1" autocomplete="off">
+          </div>
+          <div class="form-actions">
+            <button id="detail-button" type="submit" class="btn btn-secondary">查询详情</button>
+            <button id="report-button" type="button" class="btn btn-secondary">查看报告</button>
+          </div>
+        </div>
+        <p id="query-status" class="inline-status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <!-- 最近访问任务（浏览器本地访问索引，非服务器历史记录） -->
+    <section class="card" aria-labelledby="recent-title">
+      <h2 id="recent-title">最近访问的任务</h2>
+      <p class="section-hint">仅保存在当前浏览器（localStorage）中的访问索引，不代表服务器完整历史记录；点击后仍通过后端接口读取实际内容。</p>
+      <div id="recent-container"></div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>DeliveryGate AI — 交付前置核验工作台。模拟模式结果标注 simulation，真实模型结果标注 real，两者严格区分。</p>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
